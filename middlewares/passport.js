@@ -3,8 +3,8 @@ var LocalStrategy = require("passport-local").Strategy;
 var userModel = require("../models/users.model");
 var bcrypt = require("bcrypt");
 
-module.exports = function (app) {
-  var ls = new LocalStrategy(
+passport.use(
+  new LocalStrategy(
     {
       usernameField: "username",
       passwordField: "password",
@@ -22,11 +22,14 @@ module.exports = function (app) {
             username: rows[0].username,
             email: rows[0].email,
           };
-          bcrypt.compare(password, user.password, (err, same) => {
+          let userPass = rows[0].password;
+          bcrypt.compare(password, userPass, (err, same) => {
             if (same) {
               return done(null, user);
             } else {
-              return done(null, false, { message: "Not matching password" });
+              return done(null, false, {
+                message: "Not matching password",
+              });
             }
           });
         })
@@ -34,14 +37,15 @@ module.exports = function (app) {
           return done(err, false);
         });
     }
-  );
+  )
+);
 
-  passport.use(ls);
-  passport.serializeUser((user, done) => {
-    return done(null, user);
-  });
+passport.serializeUser((user, done) => {
+  return done(null, user);
+});
 
-  passport.deserializeUser((user, done) => {
-    return done(null, user);
-  });
-};
+passport.deserializeUser((user, done) => {
+  return done(null, user);
+});
+
+module.exports = passport;

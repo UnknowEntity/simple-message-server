@@ -1,28 +1,27 @@
 const express = require("express");
 const bcrypt = require("bcrypt");
-const passport = require("passport");
+const passport = require("../middlewares/passport");
 const userModel = require("../models/users.model");
 const auth = require("../middlewares/auth");
 var router = express.Router();
 
 router.post("/login", (req, res, next) => {
-  passport.authenticate("local", (err, user, info) => {
-    if (err) return next(err);
-
-    if (!user) {
-      return next(err);
+  passport.authenticate("local", { session: false }, (err, user, info) => {
+    if (err || !user) {
+      return res.status(400).json({
+        message: info ? info.message : err,
+        user,
+      });
     }
-
-    req.logIn((user, err) => {
-      if (err) return next(err);
-      console.log(user);
+    req.login(user, { session: false }, (err) => {
+      if (err) return res.json(err);
       return res.json({ user, token: auth.generateAccessToken(user) });
     });
   })(req, res, next);
 });
 
 router.post("/register", (req, res, next) => {
-  let saltRounds = 12;
+  let saltRounds = 10;
   let hash = bcrypt.hashSync(req.body.password, saltRounds);
   const entity = {
     Username: req.body.username,
