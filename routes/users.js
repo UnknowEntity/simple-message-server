@@ -16,8 +16,11 @@ router.post("/login", (req, res, next) => {
     req.login(user, { session: false }, (err) => {
       if (err) return res.json({ message: err, success: false });
       let token = auth.generateAccessToken(user);
-      console.log(token);
-      res.cookie("token", token, { httpOnly: true });
+      res.cookie("token", token, {
+        expires: new Date(Date.now() + 3600000),
+        httpOnly: true,
+        secure: true,
+      });
       return res.json({ user, success: true });
     });
   })(req, res, next);
