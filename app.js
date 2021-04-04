@@ -21,7 +21,6 @@ app.use(
       "Accept",
       "X-Access-Token",
       "Authorization",
-      "credentials",
     ],
     methods: "GET, HEAD, POST, PUT, PATCH, DELETE, OPTIONS",
   })
