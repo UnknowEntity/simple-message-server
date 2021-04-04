@@ -15,8 +15,9 @@ router.post("/login", (req, res, next) => {
     }
     req.login(user, { session: false }, (err) => {
       if (err) return res.json({ message: err, success: false });
-
-      res.cookie("token", auth.generateAccessToken(user), { httpOnly: true });
+      let token = auth.generateAccessToken(user);
+      console.log(token);
+      res.cookie("token", token, { httpOnly: true });
       return res.json({ user, success: true });
     });
   })(req, res, next);
