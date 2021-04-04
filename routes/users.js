@@ -20,6 +20,7 @@ router.post("/login", (req, res, next) => {
         expires: new Date(Date.now() + 3600000),
         httpOnly: true,
         secure: true,
+        sameSite: true,
       });
       return res.json({ user, success: true });
     });
