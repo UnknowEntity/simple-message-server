@@ -9,7 +9,11 @@ router.post("/login", (req, res, next) => {
   passport.authenticate("local", (err, user, info) => {
     if (err) return next(err);
 
-    req.logIn(user, (err) => {
+    if (!user) {
+      return next(err);
+    }
+
+    req.logIn((user, err) => {
       if (err) return next(err);
       console.log(user);
       return res.json({ user, token: auth.generateAccessToken(user) });
