@@ -10,12 +10,14 @@ router.post("/login", (req, res, next) => {
     if (err || !user) {
       return res.status(400).json({
         message: info ? info.message : err,
-        user,
+        success: false,
       });
     }
     req.login(user, { session: false }, (err) => {
-      if (err) return res.json(err);
-      return res.json({ user, token: auth.generateAccessToken(user) });
+      if (err) return res.json({ message: err, success: false });
+
+      res.cookie("token", auth.generateAccessToken(user), { httpOnly: true });
+      return res.json({ user, success: true });
     });
   })(req, res, next);
 });
