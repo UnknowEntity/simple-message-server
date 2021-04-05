@@ -12,7 +12,7 @@ var app = express();
 // ========== Configure CORS ==========
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: "http://localhost:3001",
     credentials: true,
     allowedHeaders: [
       "Origin",

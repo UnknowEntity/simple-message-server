@@ -11,16 +11,13 @@ module.exports = {
     });
   },
   authenticateToken: (req, res, next) => {
-    const authHeader = req.header["authorization"];
-    const token = authHeader && authHeader.split(" ")[1];
+    const authToken = req.cookies["token"];
 
-    if (token === null) {
+    if (authToken === null) {
       return res.json({ success: false, message: "not found token" });
     }
 
-    jwt.verify(token, process.env.TOKEN_SECRET, (err, data) => {
-      console.log(err);
-
+    jwt.verify(authToken, process.env.TOKEN_SECRET, (err, data) => {
       if (err) {
         return res.json({ success: false, message: err });
       }
@@ -37,13 +34,11 @@ module.exports = {
 
           let user = rows[0];
           res.user = user;
-          return res.json({ success: true });
+          return next();
         })
         .catch((err) => {
           return res.json({ success: false, message: err });
         });
-
-      next();
     });
   },
 };

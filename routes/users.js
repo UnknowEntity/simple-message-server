@@ -41,4 +41,8 @@ router.post("/register", (req, res, next) => {
     })
     .catch(next);
 });
+
+router.get("/private", auth.authenticateToken, (req, res, next) => {
+  res.json({ message: "youre in" });
+});
 module.exports = router;
