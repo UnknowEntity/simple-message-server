@@ -25,7 +25,13 @@ var server = http.createServer(app);
 /**
  * Listen on provided port, on all network interfaces.
  */
-socketAPI.io.attach(server);
+socketAPI.io.attach(server, {
+  cors: {
+    origin: "http://localhost:3001",
+    methods: ["GET", "POST"],
+    credentials: true,
+  },
+});
 
 server.listen(port);
 server.on("error", onError);

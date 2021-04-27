@@ -7,7 +7,7 @@ dotenv.config();
 module.exports = {
   generateAccessToken: (user) => {
     return jwt.sign({ id: user.id }, process.env.TOKEN_SECRET, {
-      expiresIn: "30m",
+      expiresIn: "7d",
     });
   },
   authenticateToken: (req, res, next) => {
@@ -33,7 +33,17 @@ module.exports = {
           }
 
           let user = rows[0];
-          res.user = user;
+          req.user = user;
+          if (data.exp - Date.now() / 1000 < 86400) {
+            const token = jwt.sign({ id: user.id }, process.env.TOKEN_SECRET, {
+              expiresIn: "7d",
+            });
+            res.cookie("token", token, {
+              expires: new Date(Date.now() + 3600000),
+              httpOnly: true,
+              sameSite: true,
+            });
+          }
           return next();
         })
         .catch((err) => {

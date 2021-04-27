@@ -17,7 +17,7 @@ router.post("/login", (req, res, next) => {
       if (err) return res.json({ message: err, success: false });
       let token = auth.generateAccessToken(user);
       res.cookie("token", token, {
-        expires: new Date(Date.now() + 3600000),
+        expires: new Date(Date.now() + 604800000),
         httpOnly: true,
         sameSite: true,
       });
@@ -30,16 +30,27 @@ router.post("/register", (req, res, next) => {
   let saltRounds = 10;
   let hash = bcrypt.hashSync(req.body.password, saltRounds);
   const entity = {
-    Username: req.body.username,
-    Password: hash,
-    Email: req.body.email,
+    username: req.body.username,
+    displayname: req.body.displayName,
+    password: hash,
+    email: req.body.email,
   };
-  userModel
-    .add(entity)
-    .then((n) => {
-      res.json({ id: n.insertId });
-    })
-    .catch(next);
+  userModel.singleByUserName(entity.username).then((n) => {
+    if (n.length !== 0) {
+      res.json({ err: true, message: "Username already existed" });
+      return next();
+    }
+    userModel.singleByEmail(entity.email).then((n) => {
+      if (n.length !== 0) {
+        res.json({ err: true, message: "Email already existed" });
+        return next();
+      }
+
+      userModel.add(entity).then((n) => {
+        res.json({ err: false, id: n.insertId });
+      });
+    });
+  });
 });
 
 router.get("/private", auth.authenticateToken, (req, res, next) => {

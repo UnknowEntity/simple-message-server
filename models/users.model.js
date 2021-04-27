@@ -1,11 +1,21 @@
 var db = require("../utils/db");
 var userModel = {
   singleByUserName: (userName) => {
-    return db.load(`select * from user where Username = '${userName}'`);
+    return db.load(`select * from user where username = '${userName}'`);
   },
 
   singleById: (id) => {
-    var sql = `SELECT * FROM user WHERE Id = ${id}`;
+    var sql = `SELECT * FROM user WHERE id = ${id}`;
+    return db.load(sql);
+  },
+
+  singleBySocketId: (id) => {
+    var sql = `SELECT * FROM user WHERE socketId = ${id}`;
+    return db.load(sql);
+  },
+
+  singleByEmail: (email) => {
+    var sql = `SELECT * FROM user WHERE email = '${email}'`;
     return db.load(sql);
   },
 
